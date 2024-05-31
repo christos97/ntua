@@ -1,3 +1,6 @@
 [submodule "databases/db-ntua"]
 	path = databases/db-ntua
 	url = https://github.com/christos97/db-ntua
+[submodule "multimedia-technology/ntua-media-lab"]
+	path = multimedia-technology/ntua-media-lab
+	url = https://github.com/christos97/db-ntua
