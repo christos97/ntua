@@ -4,3 +4,6 @@
 [submodule "multimedia-technology/ntua-media-lab"]
 	path = multimedia-technology/ntua-media-lab
 	url = https://github.com/christos97/db-ntua
+[submodule "saas/softeng-ntua"]
+	path = saas/softeng-ntua
+	url = https://github.com/christos97/softeng-ntua
