@@ -1,0 +1,3 @@
+[submodule "databases/db-ntua"]
+	path = databases/db-ntua
+	url = https://github.com/christos97/db-ntua
