@@ -1,0 +1,143 @@
+extends ../layout
+block content
+    include ../includes/navbar
+    script(src="../js/customers/customerTransactionsTable.js")
+    script(type ='text/babel' src="../js/charts/top10PerCustomerChart.js")
+    script(type ='text/babel' src="../js/charts/customerVisitingHoursChart.js")
+    - const parseDate = (utc) => {
+        - return (utc.toString()).split('GMT')[0]
+    - }
+    - const parseBirthDate = (utc) => {
+        - let d = (utc.toString()).split(' ')
+        - return d[2] + ' ' + d[1] + ' ' + d[3]
+    - } 
+    - const checkPets = (pets) => {
+        - if (pets === '') return '-'
+        - else return pets
+    - }
+    - const parseMonth = (num) => {
+        - let months = ['January', 'February', 'March', 'April']
+        - return months[num-1] 
+    - }
+    .container-fluid(style="margin-left:4%;")
+        .row
+            .col    
+                .card.shadow(style="background-color: lightslategrey; margin-top:3.2rem;")
+                    .card-body.text-white
+                        i.fas.fa-user.fa-2x(style="margin-bottom: 1rem;")
+                        h5.card-title(style='font-size: 26  px;') #{customer[0].Name} 
+                        br
+                        h5 Card ID: #{customer[0].Card}  
+                        h5 Card Points: #{customer[0].Points}
+                        h5 Birth Date: #{parseBirthDate(customer[0].Date_of_birth)}
+                        h5 Address: #{customer[0].City}, #{customer[0].Street} #{customer[0].Number_}, #{customer[0].Postal_code}
+                        h5 Phone: #{customer[0].Phone}
+                        h5 Family members: #{customer[0].Family_members} 
+                        h5 Pet: #{checkPets(customer[0].Pet)}
+                .row
+                    .col
+                        h3(style="margin: 3rem 10% 1rem 0rem;") Transactions averages
+                .row
+                    .col
+                        table#weeklyTable.table-sm.table-borderless.table-light.table-striped.shadow(style="width: 75% ;margin: 2.5rem 1rem 2rem 0rem;")
+                            thead
+                                tr  
+                                    th Week
+                                    th $ 
+                            tbody
+                                each week in per_week
+                                    tr
+                                        td #{parseInt(week.Week_no) + 1}
+                                        td #{Math.round(week.Avrg)}  
+                    .col(style="margin-top: 0rem;")    
+                        table.table-sm.table-borderless.table-light.table-striped.shadow(style="width: 75% ; margin: 5rem 1rem 2rem 0rem;")
+                            thead
+                                tr  
+                                    th Month
+                                    th $ 
+                            tbody
+                                each month in per_month
+                                    tr
+                                        td #{parseMonth(month.Month_no)}
+                                        td #{Math.round(month.Avrg)}
+            .col
+                .card.shadow.bg-white(style="margin-top:8%; border-radius: 15px; border-color:white;")
+                    .card-body
+                        h4.card-title Customer Visiting Hours
+                        .chart-container(style="margin-top: 8%;")
+                            #customer_visiting_hours_chart
+                .card.shadow.bg-white(style="margin-top:25%; border-radius: 15px; border-color:white;")
+                    .card-body
+                        h4 Top 10 customer products
+                        .chart-container(style="margin: 3rem 1rem 2rem 0rem; ")
+                            #top_10_per_customer_chart  
+        .row
+            .col
+                #receiptModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='receiptLabel', aria-hidden='true')
+                    .modal-dialog.modal-lg(role='document')
+                        .modal-content.bg-light
+                            h3.modal-header.text-center.bg-light.text-dark Invoice 
+                                button#edit-close-btn.close(type='button', data-dismiss='modal', aria-label='Close')
+                                    i.far.fa-window-close
+                            .modal-body.mx-3.bg-light
+                                table#receiptTable.table-sm.table-borderless.table-light.table-striped.shadow(style="margin: 1rem 2rem 2rem 0rem; widht:80%;")
+                                    thead.bg-light.text-dark
+                                        tr  
+                                            th Product
+                                            th Pieces 
+                                            th Category
+                                            th Price per unit 
+                            .modal-footer.bg-light
+                                table#receiptTotalTable.table-sm.table-borderless.table-light.table-striped.shadow
+                                    thead.bg-light.text-dark
+                                        tr
+                                            th Total pieces 
+                                            th Total amount
+        .row
+            .col
+                h3(style="margin-left: 0rem; margin-top: 0rem;") Customer Transactions
+    .container-fluid 
+        .row
+            .col
+                .card.shadow(style="background-color: #F5F5F5 ;width: 100%;margin-top:40%;margin-left:35% ;margin-right: 0%; border-radius: 15px; border-color:#E8E8E8;")
+                    .card-body.text-dark
+                        .row
+                            .col
+                                h5.label(for="pieces_slider") Total pieces bought
+                                input#pieces_slider.js-range-slider(name="amount_slider" type="text" value="")
+                            .col       
+                                h5.label(for="amount_slider") Total amount spent (&#36;)
+                                input#amount_slider.js-range-slider(name="amount_slider" type="text" value="")
+                            .col 
+                                h5.label(style="margin-bottom:0rem;" for='radio_buttons') Payment method
+                                .btn-group.btn-group-toggle(style="margin-left:1.5rem; margin-bottom:1rem;" data-toggle="buttons" id='radio_buttons')
+                                    label.btn.btn-primary
+                                        i.fas.fa-coins
+                                        input(type="radio" name="payment_method" value='Cash')
+                                    label.btn.btn-primary All
+                                        input(type="radio" name="payment_method" value='All')
+                                    label.btn.btn-primary
+                                        i.fas.fa-credit-card
+                                        input(type="radio" name="payment_method" value='Credit Card')
+            .col
+            table#customerTransactionsTable.table.table-borderless.table-light.table-striped.shadow
+                thead 
+                    tr  
+                        th Date Time
+                        th Total pieces
+                        th Total Amount &#36;
+                        th Payment Method
+                        th Store
+                        th Invoice ID
+                tbody
+                    each trans in transactions
+                        tr 
+                            td#date_time #{parseDate(trans.Date_time)}
+                            td#number_of_pieces #{trans.Total_piecies}
+                            td#total_amount #{trans.Total_amount}
+                            td#payment_method #{trans.Payment_method}
+                            td#store #{trans.Street} #{trans.Number_}
+                            td#receipt #{trans.Trans_id}
+                                a#receipt_btn.btn.btn-secondary(style='margin: 0rem 0rem 0rem 2.6rem; border-radius:8px;' href= "#" data-toggle='modal' data-target='#receiptModal' role="button") 
+                                    i.fas.fa-file-invoice-dollar
+    
