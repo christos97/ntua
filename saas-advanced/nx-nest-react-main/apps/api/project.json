@@ -1,0 +1,91 @@
+{
+  "name": "api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/api/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/apps/api",
+        "main": "apps/api/src/main.ts",
+        "tsConfig": "apps/api/tsconfig.app.json",
+        "assets": ["apps/api/src/assets"],
+        "isolatedConfig": true,
+        "generatePackageJson": false,
+        "webpackConfig": "apps/api/webpack.config.js"
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "api:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "api:build:development"
+        },
+        "production": {
+          "buildTarget": "api:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/api/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/api/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    },
+    "docker-build": {
+      "dependsOn": ["build", "^build"],
+      "inputs": ["{workspaceRoot}/dist/apps/api", "{projectRoot}/Dockerfile"],
+      "command": "docker build -f apps/api/Dockerfile . -t api"
+    },
+    "docker-push": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["docker-build"],
+      "options": {
+        "commands": [
+          "docker tag api:latest $BASE_TAG/api:$SERVICE_VERSION",
+          "docker push $BASE_TAG/api:$SERVICE_VERSION"
+        ],
+        "parallel": false
+      }
+    },
+    "deploy": {
+      "dependsOn": ["docker-push"],
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "gcloud run deploy api --image=$BASE_TAG/api:$SERVICE_VERSION --allow-unauthenticated --region $GCLOUD_REGION --set-env-vars \"GCLOUD_PROJECT=$GCLOUD_PROJECT\""
+        ],
+        "parallel": false
+      }
+    }
+  },
+  "tags": []
+}
