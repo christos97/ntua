@@ -1,0 +1,18 @@
+
+a:hover {
+    border-radius: 10px;
+    border-style: inset ;
+    border-color: rgb(104, 104, 103);
+}
+
+a.navbar-brand {
+    font-size:23px; 
+    font-weight: 'italic'; 
+    margin-right: 3rem
+}
+
+a.nav-link {
+    font-size:18px; 
+    margin-left: 1.5rem;
+}
+

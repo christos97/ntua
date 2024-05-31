@@ -1,0 +1,43 @@
+{
+  "hosting": {
+    "public": "dist/apps/web",
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ],
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+  },
+  "functions": {
+    "codebase": "default",
+    "predeploy": ["npx nx build functions"],
+    "runtime": "nodejs16",
+    "source": "dist/apps/functions"
+  },
+  "firestore": {
+    "rules": "apps/functions/firestore.rules",
+    "indexes": "apps/functions/firestore.indexes.json"
+  },
+  "storage": {
+    "rules": "apps/functions/storage.rules"
+  },
+  "emulators": {
+    "auth": {
+      "port": 9999
+    },
+    "functions": {
+      "port": 5001
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "storage": {
+      "port": 9199
+    },
+    "ui": {
+      "enabled": true
+    },
+    "singleProjectMode": true
+  }
+}

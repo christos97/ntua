@@ -1,0 +1,11 @@
+# Add files here to ignore them from prettier formatting
+/dist
+/coverage
+/tmp
+/docs
+pnpm-lock.yaml
+tsconfig.base.json
+nx.json
+package.json
+*.sh
+*.yml
